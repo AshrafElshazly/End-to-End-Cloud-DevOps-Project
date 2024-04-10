@@ -1,0 +1,38 @@
+name: Deploy MySQL Master-Slave Replication
+
+on:
+  push:
+    paths:
+      - "Ansible/**"
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install Ansible
+        run: |
+          pip install ansible
+
+      - name: Configure SSH private key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_rsa
+
+      - name: Run Ansible playbook
+        run: |
+          ansible-playbook -i inventory.yml playbook.yml
+        working-directory: Ansible

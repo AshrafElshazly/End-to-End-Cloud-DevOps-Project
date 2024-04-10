@@ -1,0 +1,83 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    paths:
+      - "app/**"
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: node
+  CLUSTER_NAME: node-app-cluster
+  SERVICE_NAME: node-app-service
+  REGION: us-east-1
+
+jobs:
+  build_and_release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+    steps:
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Check if ECR repository exists
+        id: check-ecr-repo
+        run: |
+          aws ecr describe-repositories --repository-names ${{ env.IMAGE_NAME }} > /dev/null 2>&1 || echo "::set-output name=exists::false"
+
+      - name: Create ECR repository
+        if: steps.check-ecr-repo.outputs.exists == 'false'
+        run: aws ecr create-repository --repository-name ${{ env.IMAGE_NAME }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: "${{ secrets.ACC_ID }}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.IMAGE_NAME }}:latest"
+
+  deploy:
+    name: Deploy to ECS
+    needs: [build_and_release]
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+    steps:
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Check if ECS cluster exists
+        id: check-ecs-cluster
+        run: |
+          aws ecs describe-clusters --cluster ${{ env.CLUSTER_NAME }} > /dev/null 2>&1 || echo "::set-output name=exists::false"
+
+      - name: Check if ECS service exists
+        id: check-ecs-service
+        run: |
+          aws ecs describe-services --cluster ${{ env.CLUSTER_NAME }} --services ${{ env.SERVICE_NAME }} > /dev/null 2>&1 || echo "::set-output name=exists::false"
+
+      - name: Deploy to ECS
+        if: steps.check-ecs-cluster.outputs.exists == 'true' && steps.check-ecs-service.outputs.exists == 'true'
+        run: aws ecs update-service --cluster ${{ env.CLUSTER_NAME }} --service ${{ env.SERVICE_NAME }} --force-new-deployment

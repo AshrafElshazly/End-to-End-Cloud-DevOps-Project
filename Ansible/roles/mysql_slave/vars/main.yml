@@ -1,0 +1,3 @@
+---
+mysql_master_host: "11.0.5.100"
+mysql_master_port: "3306"

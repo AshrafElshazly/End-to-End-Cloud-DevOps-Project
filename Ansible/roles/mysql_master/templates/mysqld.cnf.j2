@@ -1,0 +1,9 @@
+[mysqld]
+server-id               = 1
+log_bin                 = /var/log/mysql/mysql-bin.log
+log_error               = /var/log/mysql/error.log
+binlog_do_db            = node
+binlog_ignore_db        = mysql
+bind-address            = 0.0.0.0
+mysqlx-bind-address     = 127.0.0.1
+port                    = 3306

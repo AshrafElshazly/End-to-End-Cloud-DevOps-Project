@@ -1,0 +1,21 @@
+all:
+  hosts:
+    bastion_host:
+      ansible_host: 34.229.85.5
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+  children:
+    mysql_servers:
+      hosts:
+        master:
+          ansible_host: 11.0.5.100
+          ansible_user: ubuntu
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ hostvars["bastion_host"]["ansible_user"] }}@{{ hostvars["bastion_host"]["ansible_host"] }}"'
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+        slave:
+          ansible_host: 11.0.6.100
+          ansible_user: ubuntu
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ hostvars["bastion_host"]["ansible_user"] }}@{{ hostvars["bastion_host"]["ansible_host"] }}"'
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa

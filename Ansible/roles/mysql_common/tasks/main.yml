@@ -1,0 +1,46 @@
+---
+- name: Install MySQL packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - mysql-server
+    - mysql-client
+    - python3-mysqldb
+  become: yes
+
+- name: Ensure MySQL service is enabled and started
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Set MySQL root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    host: localhost
+    update_password: always
+  become: yes
+
+- name: Add application user
+  mysql_user:
+    name: "{{ app_user }}"
+    password: "{{ app_user_password }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    host: "%" 
+    priv: "*.*:ALL"
+    append_privs: yes
+  become: yes
+
+- name: Create a MySQL database
+  community.mysql.mysql_db:
+    name: node
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    state: present
+  become: yes

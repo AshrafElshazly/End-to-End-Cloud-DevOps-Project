@@ -1,0 +1,10 @@
+variable "region" {}
+variable "ecs_cluster_name" {}
+variable "ecs_service_name" {}
+variable "desired_task_count" {}
+variable "acc_id" {}
+variable "image" {}
+variable "private_subnet_1_id" {}
+variable "private_subnet_2_id" {}
+variable "tg" {}
+variable "vpc_id" {}

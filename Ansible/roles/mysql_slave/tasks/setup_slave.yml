@@ -1,0 +1,57 @@
+---
+- name: Include custom MySQL configuration
+  template:
+    src: mysqld.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+  notify: Restart MySQL service
+  become: yes
+
+- name: Stop Replica if already running
+  mysql_replication:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    mode: "stopreplica"
+  become: yes
+
+- name: Change master to set up replication
+  mysql_replication:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    mode: "changeprimary"
+    master_host: "{{ mysql_master_host }}"
+    master_user: "{{ mysql_replication_user }}"
+    master_password: "{{ mysql_replication_password }}"
+    master_port: "{{ mysql_master_port }}"
+    master_log_file: "{{ mysql_master_status.File }}"
+    master_log_pos: "{{ mysql_master_status.Position }}"
+  become: yes
+
+- name: Stop MySQL slave
+  mysql_query:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    query: "STOP SLAVE;"
+  become: yes
+
+- name: Reset MySQL slave
+  mysql_query:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    query: "RESET SLAVE;"
+  become: yes
+
+- name: Start MySQL slave
+  mysql_query:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    query: "START SLAVE;"
+  become: yes
+
+
+- name: Start Replica
+  mysql_replication:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    mode: "startreplica"
+  become: yes
+
