@@ -1,0 +1,36 @@
+---
+- name: Ensure unzip is installed
+  become: yes
+  package:
+    name: unzip
+    state: present
+
+- name: Download AWS CLI installation archive
+  shell: "curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip'"
+  args:
+    chdir: "~"
+
+- name: Extract AWS CLI installation archive
+  shell: "unzip awscliv2.zip"
+  args:
+    chdir: "~"
+
+- name: Install AWS CLI
+  shell: "sudo ~/aws/install"
+
+- name: Ensure AWS credentials directory exists
+  file:
+    path: ~/.aws
+    state: directory
+
+- name: Set AWS credentials in configuration file
+  template:
+    src: credentials
+    dest: ~/.aws/credentials
+
+- name: Set AWS config in config file
+  template:
+    src: config
+    dest: ~/.aws/config
+  vars:
+    region: us-west-2

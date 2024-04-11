@@ -1,0 +1,17 @@
+---
+- name: Set MySQL Backup configuration
+  template:
+    src: mysql_backup
+    dest: /home/ubuntu/mysql_backup
+
+- name: Ensure backup directory exists
+  file:
+    path: "{{ backup_dir }}"
+    state: directory
+
+- name: Add cron job to run script every day at 5 AM
+  cron:
+    name: "Backup MySQL to S3"
+    minute: "0"
+    hour: "5"
+    job: "/home/ubuntu/mysql_backup.sh"

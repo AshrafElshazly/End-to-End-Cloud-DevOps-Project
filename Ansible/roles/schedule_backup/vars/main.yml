@@ -1,0 +1,8 @@
+mysql_user: root
+mysql_password: password
+database: node
+s3_bucket: backup-bucket-elshazlii
+s3_path: backup/node/mysql
+backup_dir: ~/backup
+aws_access_key_id:
+aws_secret_access_key:

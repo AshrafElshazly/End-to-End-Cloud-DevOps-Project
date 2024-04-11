@@ -11,6 +11,7 @@
 
   roles:
     - mysql_master
+    - schedule_backup
 
 - name: Setup MySQL Slave
   hosts: slave

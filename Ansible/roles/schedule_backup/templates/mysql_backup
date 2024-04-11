@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# MySQL credentials
+MYSQL_USER={{ mysql_user }}
+MYSQL_PASSWORD={{ mysql_password }}
+DATABASE={{ database }}
+
+# S3 vars
+s3_bucket={{ s3_bucket }}
+s3_path={{ s3_path }}
+
+# Backup directory
+BACKUP_DIR={{ backup_dir }}
+
+# Create a timestamp for the backup file
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+BACKUP_FILE="$BACKUP_DIR/backup_$TIMESTAMP.sql"
+
+# Perform MySQL dump
+mysqldump -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$DATABASE" > "$BACKUP_FILE"
+
+# Upload backup file to S3
+aws s3 cp "$BACKUP_FILE" s3://"$s3_bucket"/"$s3_path"/backup_"$TIMESTAMP".sql
