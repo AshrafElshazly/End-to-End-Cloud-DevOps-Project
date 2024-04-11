@@ -1,5 +1,3 @@
----
 mysql_replication_user: replication
 mysql_replication_password: password
 mysql_root_password: password
-mysql_master_port: "3306"

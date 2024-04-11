@@ -1,4 +1,0 @@
----
-mysql_root_password: 123456
-app_user: app
-app_user_password: 123456

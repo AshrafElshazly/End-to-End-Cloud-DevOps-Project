@@ -1,4 +1,0 @@
----
-mysql_replication_user: replication
-mysql_replication_password: 123456
-mysql_root_password: 123456

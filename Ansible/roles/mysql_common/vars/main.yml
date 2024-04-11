@@ -1,0 +1,3 @@
+mysql_root_password: password
+app_user: app
+app_user_password: password
