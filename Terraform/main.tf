@@ -33,3 +33,7 @@ module "instances" {
   instance_type       = var.instance_type
   key_name            = var.key_name
 }
+
+module "s3" {
+  source = "./modules/s3"
+}
