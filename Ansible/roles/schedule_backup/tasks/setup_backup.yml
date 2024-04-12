@@ -4,6 +4,11 @@
     src: mysql_backup
     dest: /home/ubuntu/mysql_backup
 
+- name: Update mysql_backup permissions
+  file:
+    path: /home/ubuntu/mysql_backup
+    mode: u+x
+
 - name: Ensure backup directory exists
   file:
     path: "{{ backup_dir }}"
@@ -14,4 +19,4 @@
     name: "Backup MySQL to S3"
     minute: "0"
     hour: "5"
-    job: "/home/ubuntu/mysql_backup.sh"
+    job: "/home/ubuntu/mysql_backup"

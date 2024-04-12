@@ -3,8 +3,15 @@
   template:
     src: mysqld.cnf.j2
     dest: /etc/mysql/mysql.conf.d/mysqld.cnf
-  notify: Restart MySQL service
+  register: custom_config_result
   become: yes
+
+- name: Restart MySQL service
+  service:
+    name: mysql
+    state: restarted
+  become: yes
+  when: custom_config_result.changed
 
 - name: Stop Replica if already running
   mysql_replication:
@@ -47,11 +54,9 @@
     query: "START SLAVE;"
   become: yes
 
-
 - name: Start Replica
   mysql_replication:
     login_user: root
     login_password: "{{ mysql_root_password }}"
     mode: "startreplica"
   become: yes
-

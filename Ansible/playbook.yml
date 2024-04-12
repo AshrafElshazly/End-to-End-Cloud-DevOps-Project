@@ -4,8 +4,8 @@
 
   roles:
     - mysql_common
-    
-- name: Setup MySQL Master 
+
+- name: Setup MySQL Master
   hosts: master
   gather_facts: true
 

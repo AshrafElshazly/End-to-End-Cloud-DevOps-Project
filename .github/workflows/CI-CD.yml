@@ -71,12 +71,20 @@ jobs:
       - name: Check if ECS cluster exists
         id: check-ecs-cluster
         run: |
-          aws ecs describe-clusters --cluster ${{ env.CLUSTER_NAME }} > /dev/null 2>&1 || echo "::set-output name=exists::false"
+          if aws ecs describe-clusters --cluster ${{ env.CLUSTER_NAME }} > /dev/null 2>&1; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
 
       - name: Check if ECS service exists
         id: check-ecs-service
         run: |
-          aws ecs describe-services --cluster ${{ env.CLUSTER_NAME }} --services ${{ env.SERVICE_NAME }} > /dev/null 2>&1 || echo "::set-output name=exists::false"
+          if aws ecs describe-services --cluster ${{ env.CLUSTER_NAME }} --services ${{ env.SERVICE_NAME }} > /dev/null 2>&1; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
 
       - name: Deploy to ECS
         if: steps.check-ecs-cluster.outputs.exists == 'true' && steps.check-ecs-service.outputs.exists == 'true'

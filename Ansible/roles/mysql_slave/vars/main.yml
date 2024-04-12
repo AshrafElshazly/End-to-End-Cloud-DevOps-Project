@@ -3,3 +3,4 @@ mysql_replication_user: replication
 mysql_replication_password: password
 mysql_root_password: password
 mysql_master_port: "3306"
+mysql_master_host: 11.0.5.100
