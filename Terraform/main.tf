@@ -9,6 +9,11 @@ module "alb" {
   public_subnet_2_id = module.vpc.public_subnet_2_id
 }
 
+module "security" {
+  source     = "./modules/security"
+  aws_lb_arn = module.alb.aws_lb_arn
+}
+
 module "ecs" {
   source              = "./modules/ecs"
   region              = var.region
