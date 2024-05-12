@@ -3,82 +3,68 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Create MySQL connection
-const connection = mysql.createConnection({
-  host: process.env.DATABASE_HOST,
+// Create connection pools for master and slave servers
+const masterPool = mysql.createPool({
+  host: process.env.DATABASE_HOST_MASTER,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
 });
 
-// Connect to the MySQL server
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL: ', err);
-  } else {
-    console.log('Connected to MySQL server');
-    // Setup the database and create users table
-    setupDatabase();
-  }
+const slavePool = mysql.createPool({
+  host: process.env.DATABASE_HOST_SLAVE,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
 });
 
-// Function to setup the database and create the users table
-function setupDatabase() {
-  connection.query(
-    `CREATE DATABASE IF NOT EXISTS ${process.env.DATABASE_NAME};`,
-    (err) => {
+let activePool = masterPool; // Start with master pool
+
+// Function to get a connection from the active pool
+const getConnection = () => {
+  return new Promise((resolve, reject) => {
+    activePool.getConnection((err, connection) => {
       if (err) {
-        console.error('Error creating database: ', err);
+        console.error('Error connecting to database: ', err);
+        reject(err);
       } else {
-        console.log('Database created or already exists');
-        // Use the created database
-        connection.query(`USE ${process.env.DATABASE_NAME};`, (useErr) => {
-          if (useErr) {
-            console.error('Error selecting database: ', useErr);
-          } else {
-            console.log('Database selected');
-            // Create the users table
-            connection.query(
-              `CREATE TABLE IF NOT EXISTS users (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                username VARCHAR(255) NOT NULL,
-                email VARCHAR(255) NOT NULL
-              );`,
-              (tableErr) => {
-                if (tableErr) {
-                  console.error('Error creating users table: ', tableErr);
-                } else {
-                  console.log('Users table created or already exists');
-                  // Insert 3 sample users
-                  insertSampleUsers();
-                }
-              }
-            );
-          }
-        });
+        resolve(connection);
       }
+    });
+  });
+};
+
+// Function to handle failover by switching to the slave pool
+const handleFailover = () => {
+  console.log('Switching to slave server...');
+  activePool = slavePool;
+};
+
+// Connect to the MySQL servers
+const connectToServers = () => {
+  masterPool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error connecting to master server: ', err);
+      handleFailover();
+    } else {
+      console.log('Connected to master server');
+      connection.release();
     }
-  );
-}
+  });
 
-// Function to insert sample users
-function insertSampleUsers() {
-  const sampleUsers = [
-    { username: 'user1', email: 'user1@example.com' },
-    { username: 'user2', email: 'user2@example.com' },
-    { username: 'user3', email: 'user3@example.com' },
-  ];
-
-  connection.query(
-    'INSERT INTO users (username, email) VALUES ?',
-    [sampleUsers.map((user) => [user.username, user.email])],
-    (err) => {
-      if (err) {
-        console.error('Error inserting sample users: ', err);
-      } else {
-        console.log('Sample users inserted successfully');
-      }
+  slavePool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error connecting to slave server: ', err);
+    } else {
+      console.log('Connected to slave server');
+      connection.release();
     }
-  );
-}
+  });
+};
 
-module.exports = connection;
+// Call the function to connect to servers when this module is loaded
+connectToServers();
+
+module.exports = {
+  getConnection,
+};
