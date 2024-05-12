@@ -34,5 +34,8 @@ jobs:
 
       - name: Run Ansible playbook
         run: |
-          ansible-playbook -i inventory.yml playbook.yml
+          ansible-playbook -i inventory.yml playbook.yml \
+          -e "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -e "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -e "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}"
         working-directory: Ansible
