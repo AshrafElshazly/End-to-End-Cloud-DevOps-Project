@@ -38,9 +38,11 @@ jobs:
 
       - name: Terraform Format
         run: terraform fmt -check
+        working-directory: Terraform
 
       - name: Terraform Plan
         run: terraform plan
+        working-directory: Terraform
 
       - name: Terraform Apply
         run: terraform apply --auto-approve
