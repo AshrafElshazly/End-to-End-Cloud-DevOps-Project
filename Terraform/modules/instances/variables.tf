@@ -8,3 +8,6 @@ variable "ami" {}
 variable "instance_type" {}
 
 variable "key_name" {}
+
+variable "master_eni_ip" {}
+variable "slave_eni_ip" {}

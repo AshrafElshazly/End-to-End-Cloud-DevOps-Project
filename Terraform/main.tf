@@ -37,8 +37,11 @@ module "instances" {
   ami                 = var.ami
   instance_type       = var.instance_type
   key_name            = var.key_name
+  master_eni_ip       = var.master_eni_ip
+  slave_eni_ip        = var.slave_eni_ip
 }
 
 module "s3" {
-  source = "./modules/s3"
+  source             = "./modules/s3"
+  backup_bucket_name = var.backup_bucket_name
 }

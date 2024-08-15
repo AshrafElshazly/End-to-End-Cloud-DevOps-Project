@@ -1,0 +1,1 @@
+variable "backup_bucket_name" {}
