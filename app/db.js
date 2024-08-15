@@ -5,16 +5,16 @@ dotenv.config();
 
 // Create connection pools for master and slave servers
 const masterPool = mysql.createPool({
-  host: process.env.DATABASE_HOST_MASTER,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
+  host: process.env.MYSQL_MASTER_HOST,
+  user: process.env.MYSQL_APP_USER,
+  password: process.env.MYSQL_APP_USER_PASSWORD,
   database: process.env.DATABASE_NAME,
 });
 
 const slavePool = mysql.createPool({
-  host: process.env.DATABASE_HOST_SLAVE,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
+  host: process.env.MYSQL_SLAVE_HOST,
+  user: process.env.MYSQL_APP_USER,
+  password: process.env.MYSQL_APP_USER_PASSWORD,
   database: process.env.DATABASE_NAME,
 });
 
