@@ -1,14 +1,12 @@
 - name: Install MySQL in Master and Slave
   hosts: mysql_servers
   gather_facts: true
-
   roles:
     - mysql_common
 
 - name: Setup MySQL Master
   hosts: master
   gather_facts: true
-
   roles:
     - mysql_master
     - schedule_backup

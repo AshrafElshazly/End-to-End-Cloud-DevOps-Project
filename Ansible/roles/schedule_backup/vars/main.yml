@@ -1,9 +1,10 @@
-mysql_user: root
-mysql_password: password
-database: node
-s3_bucket: backup-bucket-elshazlii
-s3_path: backup/node/mysql
-backup_dir: ~/backup
+backup_mysql_user: root
+backup_mysql_password: "{{mysql_root_password}}"
+database_name: "{{database_name}}"
+s3_bucket: "{{s3_bucket}}"
+s3_path: "{{s3_path}}"
+backup_dir: "{{ backup_dir }}"
 aws_access_key_id: "{{ aws_access_key_id }}"
 aws_secret_access_key: "{{ aws_secret_access_key }}"
 aws_session_token: "{{ aws_session_token }}"
+region: "{{ region }}"

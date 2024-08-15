@@ -1,3 +1,3 @@
-mysql_replication_user: replication
-mysql_replication_password: password
-mysql_root_password: password
+mysql_replication_user: "{{mysql_replication_user}}"
+mysql_replication_password: "{{mysql_replication_password}}"
+mysql_root_password: "{{mysql_root_password}}"

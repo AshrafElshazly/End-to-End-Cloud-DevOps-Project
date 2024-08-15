@@ -1,0 +1,5 @@
+#Hosts
+bastion_host: "{{ bastion_host }}"
+mysql_master_host: "{{ mysql_master_host }}"
+mysql_slave_host: "{{ mysql_slave_host }}"
+ansible_user: "{{ ansible_user }}"

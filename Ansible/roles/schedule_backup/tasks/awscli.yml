@@ -25,4 +25,4 @@
     src: config
     dest: ~/.aws/config
   vars:
-    region: us-west-2
+    region: "{{ region }}"

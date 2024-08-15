@@ -4,7 +4,7 @@
     src: mysqld.cnf.j2
     dest: /etc/mysql/mysql.conf.d/mysqld.cnf
   notify: Restart MySQL service
-  become: yes
+  become: true
   
 - name: Create replication user for master
   mysql_user:

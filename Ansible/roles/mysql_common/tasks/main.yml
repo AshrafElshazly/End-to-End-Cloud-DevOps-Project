@@ -3,18 +3,19 @@
   apt:
     name: "{{ item }}"
     state: present
+    update_cache: yes
   loop:
     - mysql-server
     - mysql-client
     - python3-mysqldb
-  become: yes
+  become: true
 
 - name: Ensure MySQL service is enabled and started
   service:
     name: mysql
     state: started
-    enabled: yes
-  become: yes
+    enabled: true
+  become: true
 
 - name: Set MySQL root password
   mysql_user:
@@ -24,18 +25,18 @@
     login_password: "{{ mysql_root_password }}"
     host: localhost
     update_password: always
-  become: yes
+  become: true
 
 - name: Add application user
   mysql_user:
-    name: "{{ app_user }}"
-    password: "{{ app_user_password }}"
+    name: "{{ mysql_app_user }}"
+    password: "{{ mysql_app_user_password }}"
     login_user: root
     login_password: "{{ mysql_root_password }}"
     host: "%" 
     priv: "*.*:ALL"
-    append_privs: yes
-  become: yes
+    append_privs: true
+  become: true
 
 - name: Create a MySQL database
   community.mysql.mysql_db:
@@ -43,4 +44,4 @@
     login_user: root
     login_password: "{{ mysql_root_password }}"
     state: present
-  become: yes
+  become: true

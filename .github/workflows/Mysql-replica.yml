@@ -34,8 +34,26 @@ jobs:
 
       - name: Run Ansible playbook
         run: |
-          ansible-playbook -i inventory.yml playbook.yml \
-          -e "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
-          -e "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-          -e "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}"
+          ansible-playbook playbook.yml \
+            -e "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -e "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -e "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \
+            -e "mysql_root_password=${{ secrets.MYSQL_ROOT_PASSWORD }}" \
+            -e "mysql_app_user=${{ secrets.MYSQL_APP_USER }}" \
+            -e "mysql_app_user_password=${{ secrets.MYSQL_APP_USER_PASSWORD }}" \
+            -e "mysql_replication_user=${{ secrets.MYSQL_REPLICATION_USER }}" \
+            -e "mysql_replication_password=${{ secrets.MYSQL_REPLICATION_PASSWORD }}" \
+            -e "mysql_master_port=${{ secrets.MYSQL_MASTER_PORT }}" \
+            -e "mysql_master_host=${{ secrets.MYSQL_MASTER_HOST }}" \
+            -e "backup_mysql_user=${{ secrets.MYSQL_MASTER_HOST }}" \
+            -e "backup_mysql_password=${{ secrets.MYSQL_ROOT_PASSWORD }}" \
+            -e "database_name=${{ secrets.DATABASE_NAME }}" \
+            -e "s3_bucket=${{ secrets.S3_BUCKET }}" \
+            -e "s3_path=${{ secrets.S3_PATH }}" \
+            -e "backup_dir=${{ secrets.BACKUP_DIR }}" \
+            -e "region=${{ secrets.REGION }}" \
+            -e "bastion_host=${{ secrets.BASTION_HOST }}" \
+            -e "mysql_slave_host=${{ secrets.MYSQL_SLAVE_HOST }}" \
+            -e "ansible_user=${{secrets.ANSIBLE_USER}}"
+
         working-directory: Ansible

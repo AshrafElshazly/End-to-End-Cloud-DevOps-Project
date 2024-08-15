@@ -1,6 +1,5 @@
----
-mysql_replication_user: replication
-mysql_replication_password: password
-mysql_root_password: password
-mysql_master_port: "3306"
-mysql_master_host: 11.0.5.100
+mysql_replication_user: "{{mysql_replication_user}}"
+mysql_replication_password: "{{mysql_replication_password}}"
+mysql_root_password: "{{mysql_root_password}}"
+mysql_master_port: "{{mysql_master_port}}"
+mysql_master_host: "{{ mysql_master_host }}"

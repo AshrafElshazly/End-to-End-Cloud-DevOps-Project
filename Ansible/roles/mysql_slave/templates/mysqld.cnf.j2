@@ -3,6 +3,6 @@ server-id               = 2
 log_bin                 = /var/log/mysql/mysql-bin.log
 relay_log               = /var/log/mysql/mysql-relay-bin.log
 log_error               = /var/log/mysql/error.log
-binlog_do_db            = node
+binlog_do_db            = {{ database_name }}
 mysqlx-bind-address     = 127.0.0.1
 myisam-recover-options  = BACKUP
